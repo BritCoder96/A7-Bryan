@@ -1,0 +1,107 @@
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    
+    <title>
+      YikYak#2
+    </title>
+  </head>
+
+  <body>
+    <div id="header">
+      YikYak#2
+    </div>
+    
+    <div id="main">
+      
+      <div id="error">
+        <br>
+      </div>
+      
+      <textarea rows="5" columns="30" id="messg"">
+        Type a message here...
+      </textarea>
+      <br>
+        <a class="btn" type="button" onclick="sendForm()" >Post</a>
+      <br>
+      <br>
+      
+      <div id="messages">
+      </div>
+    </div>
+    <script type="text/javascript">
+      window.onload = function() {
+        getMyList();
+        if (!getCookie("username")) {
+          var cookie = "username="+Math.random().toString(36).substr(2, 9);
+          document.cookie = cookie;
+          console.log(document.cookie)
+        }
+      };  
+      function sendForm() {
+        var msgDiv = document.getElementById('messg')
+
+        function reqListener () {
+          getMyList()
+        }
+        
+        var oReq = new XMLHttpRequest();
+
+      //  oReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        
+        // defining behavior for when the response comes back to us
+        oReq.addEventListener("load", reqListener);
+
+        oReq.open("POST", "/postMsg");
+
+        // MAJOR KEY-- build form in XML http request SEND function
+        oReq.send('msg='+msgDiv.value+'&uid='+getCookie("username"))
+
+    }
+
+    // TODO start here
+    // build a list of classes from an array
+    function buildList( lit ) { // aka list
+      var div = document.getElementById('messages')
+      div.innerHTML = "";
+      // for each class in 'lit', add a paragraph tag + class name
+      lit.forEach(function(data) {
+        div.innerHTML += data
+      })
+    }
+
+    function getMyList() {
+
+      function reqListener () {
+        var tmplist = this.responseText.split(',');
+        console.log( tmplist )
+        buildList( tmplist )
+      }
+      
+      var oReq = new XMLHttpRequest();
+      
+      // defining behavior for when the response comes back to us
+      oReq.addEventListener("load", reqListener);
+      oReq.open("GET", "/getMsgs");
+      oReq.send();
+
+    }
+    function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length,c.length);
+        }
+    }
+    return "";
+}
+    </script>
+  </body>
+</html>
